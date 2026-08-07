@@ -38,6 +38,10 @@ public static class BuildTableHelper {
         foreach (var dynamicProp in row.DynamicProperties) {
             Asset? asset = null;
 
+            if(dynamicProp.ValueUid == 0) {
+                continue;
+            }
+
             if (container.ContainsAsset(dynamicProp.ValueUid)) {
                 asset = container.ReadAsset(dynamicProp.ValueUid);
             } else if (ScimitarManager.Instance.FindAssetContainer(dynamicProp.ValueUid) is AssetContainer foundContainer) {
@@ -92,10 +96,19 @@ public static class BuildTableHelper {
             throw new Exception("Character build table is missing material override table property.");
         }
 
-        var materialOverrideBuildTable = container.ReadAsset(materialOverrideTable.ValueUid).As<BuildTable>();
-        var meshBuildTable = container.ReadAsset(meshTable.ValueUid).As<BuildTable>();
+        var materialOverrideBuildTable = container.ReadAsset(materialOverrideTable.ValueUid).As<BuildTable>()!;
+        var meshBuildTable = container.ReadAsset(meshTable.ValueUid).As<BuildTable>()!;
 
         var materialOverrides = RemapMaterialOverrideBuildTable(container, materialOverrideBuildTable);
         ExportMeshAndSkeleton(container, meshBuildTable, path, materialOverrides);
+
+        var materialsPath = Path.Combine(path, "materials");
+
+        Directory.CreateDirectory(materialsPath);
+        foreach (var material in materialOverrides.Values) {
+            var materialPath = Path.Combine(materialsPath, $"material_{material.Uid:X}");
+            Directory.CreateDirectory(materialPath);
+            MaterialHelper.ExportMaterialInfo(container, material, materialPath);
+        }
     }
 }

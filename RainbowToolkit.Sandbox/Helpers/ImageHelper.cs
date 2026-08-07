@@ -9,7 +9,7 @@ namespace RainbowToolkit.Sandbox.Helpers;
 
 
 public static class ImageHelper {
-    public static byte[] GenerateDDSHeader(CompiledTextureMap textureMap, string path) {
+    public static byte[] ExportHeader(CompiledTextureMap textureMap) {
         var textureData = textureMap.Data;
 
         var width = textureData.Width >> textureData.FirstMip;
