@@ -37,11 +37,6 @@ public static class MeshHelper {
         for (int i = 0; i < mesh.MeshBones.Length; i++) {
             var meshBone = mesh.MeshBones[i];
             var bone = allBones.FirstOrDefault(b => b.BoneId == meshBone.BoneId);
-
-            if (bone == null) {
-                throw new Exception($"Bone with ID {meshBone.BoneId:X} not found in any skeleton.");
-            }
-
             var boneNode = skeletonNode.AddNode<BoneNode>();
             boneNode.Name = $"bone_{meshBone.BoneId:X}";
             Matrix4x4 childGlobal;
@@ -50,10 +45,14 @@ public static class MeshHelper {
             // HACK
             // Okay for some reasons not ALL bones in skeleton are in mesh bone
             // This fucks up hierachy. What we do is going up until we find a bone that is in mesh bone
-            // if it doesn't exist then we just set it to null and make it a root bone
+            // if it doesn't exist then we just make it a root bone
+
+            // This also happens to bone that is in meshBone but not in skeleton
+            // just gonna assume that its a root bone.
+            // and pray cast import merge can deal with them :D
 
             MeshBone? parentMeshBone = null;
-            if (bone.ParentBone != null) {
+            if (bone != null && bone.ParentBone != null) {
                 var currentParentBone = bone.ParentBone;
 
                 while (currentParentBone != null &&

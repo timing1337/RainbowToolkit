@@ -3,6 +3,7 @@ using RainbowToolkit.Scimitar.Classes.Types;
 using RainbowToolkit.Scimitar.Utils;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 
 namespace RainbowToolkit.Scimitar.Classes.Types.Shaders;
@@ -12,11 +13,18 @@ public class CharacterShaderParams : BaseObject {
     protected override uint Magic => MAGIC;
 
     public override void Parse(FastLoadReader reader) {
-        var texture = reader.Read<TextureSelector>();
-        reader.Advance(16 * 2);
-        reader.Advance(4 * 2);
-        var texture2 = reader.Read<TextureSelector>();
-        reader.Advance(16 * 5);
-        reader.Advance(4 * 3);
+        var patternTexture = reader.Read<TextureSelector>();
+        var patternTintA = reader.ReadStruct<Vector4>();
+        var patternTintB = reader.ReadStruct<Vector4>();
+        var patternUVScale = reader.ReadStruct<Vector2>();
+
+        var dyeMaskTexture = reader.Read<TextureSelector>();
+        var dyeBaseColor = reader.ReadStruct<Vector4>();
+        var dyeRedColor = reader.ReadStruct<Vector4>();
+        var dyeGreenColor = reader.ReadStruct<Vector4>();
+        var dyeBlueColor = reader.ReadStruct<Vector4>();
+
+        var flatTint = reader.ReadStruct<Vector4>();
+        var unk8 = reader.ReadStruct<Vector3>();
     }
 }

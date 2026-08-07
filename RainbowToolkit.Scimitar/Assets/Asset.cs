@@ -21,7 +21,10 @@ public class Asset {
         Name = Convert.ToHexString(reader.ReadBytes(nameLength));
         DataLength = reader.ReadUInt32();
         var classId = reader.ReadUInt32();
-        Data = reader.ReadObject();
+
+        if (ClassRegistry.RegisteredClasses.ContainsKey(classId)) {
+            Data = reader.ReadObject();
+        }
     }
 
     public T? As<T>() where T : BaseObject {

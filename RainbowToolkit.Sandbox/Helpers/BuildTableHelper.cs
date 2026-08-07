@@ -34,7 +34,7 @@ public static class BuildTableHelper {
         }
 
         List<Skeleton> skel = new();
-        Mesh? meshobj = null;
+        List<Mesh> meshes = new();
         foreach (var dynamicProp in row.DynamicProperties) {
             Asset? asset = null;
 
@@ -56,27 +56,25 @@ public static class BuildTableHelper {
             if (assetObj is Skeleton skeleton) {
                 skel.Add(skeleton);
             } else if (assetObj is Mesh mesh) {
-                meshobj = mesh;
+                meshes.Add(mesh);
             }
         }
 
-        if (meshobj == null) {
-            throw new Exception("Mesh build table is missing a mesh object.");
+        foreach(var meshobj in meshes) {
+            // Export mesh first
+            var compiledMeshObjAsset = ScimitarManager.Instance.FindAssetContainer(meshobj.CompiledMeshObjectUid)?.ReadAsset(meshobj.CompiledMeshObjectUid);
+            if (compiledMeshObjAsset == null) {
+                throw new Exception($"Could not find compiled mesh object with UID {meshobj.CompiledMeshObjectUid} in any container.");
+            }
+
+            var compiledMeshObj = compiledMeshObjAsset.As<CompiledMeshObject>()!;
+            var modelNode = MeshHelper.ExportLod(meshobj, compiledMeshObj, 0, materialOverrides);
+            MeshHelper.PopulateSkeleton(modelNode, meshobj, skel);
+
+            var root = new CastNode(CastNodeIdentifier.Root);
+            root.AddNode(modelNode);
+            CastWriter.Save(Path.Combine(path, $"mesh_{meshobj.Uid:X}.cast"), root);
         }
-
-        // Export mesh first
-        var compiledMeshObjAsset = ScimitarManager.Instance.FindAssetContainer(meshobj.CompiledMeshObjectUid)?.ReadAsset(meshobj.CompiledMeshObjectUid);
-        if (compiledMeshObjAsset == null) {
-            throw new Exception($"Could not find compiled mesh object with UID {meshobj.CompiledMeshObjectUid} in any container.");
-        }
-
-        var compiledMeshObj = compiledMeshObjAsset.As<CompiledMeshObject>()!;
-        var modelNode = MeshHelper.ExportLod(meshobj, compiledMeshObj, 0, materialOverrides);
-        MeshHelper.PopulateSkeleton(modelNode, meshobj, skel);
-
-        var root = new CastNode(CastNodeIdentifier.Root);
-        root.AddNode(modelNode);
-        CastWriter.Save(Path.Combine(path, "mesh.cast"), root);
     }
 
     public static void ExportCharacterBuildTable(AssetContainer container, BuildTable buildTable, string path) {
@@ -84,9 +82,9 @@ public static class BuildTableHelper {
         if (row == null) {
             throw new Exception("Character build table has no rows.");
         }
-
-        var meshTable = row.DynamicProperties.FirstOrDefault(prop => prop.PropertyId == 4);
-        var materialOverrideTable = row.DynamicProperties.FirstOrDefault(prop => prop.PropertyId == 5);
+        
+        var meshTable = row.DynamicProperties.FirstOrDefault(prop => prop.PropertyId == 4 || prop.PropertyId == 17);
+        var materialOverrideTable = row.DynamicProperties.FirstOrDefault(prop => prop.PropertyId == 5 || prop.PropertyId == 18);
 
         if (meshTable == null) {
             throw new Exception("Character build table is missing mesh table property.");

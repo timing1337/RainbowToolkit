@@ -19,8 +19,6 @@ public class MaterialHelper {
 
     public static void ExportDetailMap(AssetContainer container, DetailMapDescriptor descriptor, string path) {
         var textureMapSpec = container.ReadAsset(descriptor.TextureBaseUid).As<TextureMapSpec>()!;
-        Console.WriteLine("UID: " + descriptor.TextureBaseUid.ToString("X"));
-        Console.WriteLine("Scale: " + descriptor.Scale);
         ExportTextureSpec(container, textureMapSpec, path);
     }
 
