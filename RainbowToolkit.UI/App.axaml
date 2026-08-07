@@ -1,0 +1,62 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="RainbowToolkit.UI.App"
+             xmlns:chrome="using:Avalonia.Controls.Chrome"
+             RequestedThemeVariant="Dark">
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <!-- Palette (matches the RainbowScimitar Figma design) -->
+            <Color x:Key="WindowBackgroundColor">#0C0C0C</Color>
+            <Color x:Key="PanelBackgroundColor">#0C0C0C</Color>
+            <Color x:Key="SearchBackgroundColor">#232323</Color>
+            <Color x:Key="SearchBorderColor">#2E2E2E</Color>
+            <Color x:Key="DividerColor">#1E1E1E</Color>
+            <Color x:Key="TextPrimaryColor">#F2F2F2</Color>
+            <Color x:Key="TextSecondaryColor">#A0A0A0</Color>
+            <Color x:Key="TextMutedColor">#8A8A8A</Color>
+
+            <SolidColorBrush x:Key="WindowBackgroundBrush" Color="{StaticResource WindowBackgroundColor}" />
+            <SolidColorBrush x:Key="PanelBackgroundBrush" Color="{StaticResource PanelBackgroundColor}" />
+            <SolidColorBrush x:Key="SearchBackgroundBrush" Color="{StaticResource SearchBackgroundColor}" />
+            <SolidColorBrush x:Key="SearchBorderBrush" Color="{StaticResource SearchBorderColor}" />
+            <SolidColorBrush x:Key="DividerBrush" Color="{StaticResource DividerColor}" />
+            <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimaryColor}" />
+            <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondaryColor}" />
+            <SolidColorBrush x:Key="TextMutedBrush" Color="{StaticResource TextMutedColor}" />
+
+            <!-- Slim scrollbars: Fluent sizes ScrollBar MinWidth and thumb from this resource -->
+            <x:Double x:Key="ScrollBarSize">10</x:Double>
+
+            <!-- Fluent TreeViewItem theme resource overrides: keep rows monochrome -->
+            <SolidColorBrush x:Key="TreeViewItemBackgroundPointerOver" Color="#12FFFFFF" />
+            <SolidColorBrush x:Key="TreeViewItemBackgroundPressed" Color="#0AFFFFFF" />
+            <SolidColorBrush x:Key="TreeViewItemBackgroundSelected" Color="#1FFFFFFF" />
+            <SolidColorBrush x:Key="TreeViewItemBackgroundSelectedPointerOver" Color="#29FFFFFF" />
+            <SolidColorBrush x:Key="TreeViewItemBackgroundSelectedPressed" Color="#1FFFFFFF" />
+            <SolidColorBrush x:Key="TreeViewItemForegroundPointerOver" Color="{StaticResource TextPrimaryColor}" />
+            <SolidColorBrush x:Key="TreeViewItemForegroundSelected" Color="{StaticResource TextPrimaryColor}" />
+            <SolidColorBrush x:Key="TreeViewItemForegroundSelectedPointerOver" Color="{StaticResource TextPrimaryColor}" />
+
+            <!-- Search icon (Fluent System Icons: search, 16, regular) -->
+            <StreamGeometry x:Key="SearchIconGeometry">M6.5 2a4.5 4.5 0 1 0 2.809 8.016l3.087 3.088a.5.5 0 0 0 .708-.708L10.016 9.31A4.5 4.5 0 0 0 6.5 2ZM3 6.5a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0Z</StreamGeometry>
+        </ResourceDictionary>
+    </Application.Resources>
+
+    <Application.Styles>
+        <FluentTheme />
+
+        <!-- Minimal dark scrollbars to match the design's flat look -->
+        <Style Selector="ScrollBar /template/ Thumb">
+            <Setter Property="Background" Value="#2E2E2E" />
+        </Style>
+
+        <!-- The design's title bar has only minimize/maximize/close; hide the drawn full-screen button -->
+        <Style Selector="chrome|WindowDrawnDecorations /template/ Button#PART_FullScreenButton">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="Button#PART_FullScreenButton">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+    </Application.Styles>
+</Application>

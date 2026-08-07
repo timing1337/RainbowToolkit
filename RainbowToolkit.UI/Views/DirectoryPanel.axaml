@@ -1,0 +1,116 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:RainbowToolkit.UI.ViewModels"
+             xmlns:converters="using:Avalonia.Data.Converters"
+             mc:Ignorable="d" d:DesignWidth="380" d:DesignHeight="700"
+             x:Class="RainbowToolkit.UI.Views.DirectoryPanel"
+             x:DataType="vm:MainViewModel"
+             Background="{StaticResource PanelBackgroundBrush}">
+
+    <Design.DataContext>
+        <vm:MainViewModel />
+    </Design.DataContext>
+
+    <UserControl.Styles>
+        <!-- Search box: flat, rounded, monochrome in every state -->
+        <Style Selector="TextBox.search">
+            <Setter Property="Background" Value="{StaticResource SearchBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource SearchBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="MinHeight" Value="34" />
+            <Setter Property="Padding" Value="4,0,10,0" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+            <Setter Property="CaretBrush" Value="{StaticResource TextPrimaryBrush}" />
+            <Setter Property="PlaceholderForeground" Value="{StaticResource TextMutedBrush}" />
+            <Setter Property="SelectionBrush" Value="#33FFFFFF" />
+        </Style>
+        <Style Selector="TextBox.search:pointerover /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="{StaticResource SearchBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="#3A3A3A" />
+        </Style>
+        <Style Selector="TextBox.search:focus /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="{StaticResource SearchBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="#4A4A4A" />
+            <!-- Fluent's :focus state thickens the border to 2px; keep the flat 1px outline -->
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+
+        <!-- Tree rows: compact, rounded highlight (MinHeight beats Fluent's 32px TreeViewItemMinHeight floor) -->
+        <Style Selector="TreeViewItem">
+            <Setter Property="MinHeight" Value="26" />
+            <Setter Property="Padding" Value="6,3" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" x:DataType="vm:NodeViewModelBase" />
+        </Style>
+
+        <Style Selector="TextBlock.archive">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+        </Style>
+        <Style Selector="TextBlock.entry">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+        </Style>
+        <Style Selector="TextBlock.asset">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}" />
+        </Style>
+        <Style Selector="TextBlock.message">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontStyle" Value="Italic" />
+            <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}" />
+        </Style>
+        <Style Selector="TextBlock.status">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}" />
+        </Style>
+    </UserControl.Styles>
+
+    <DockPanel Margin="14,12,14,12">
+        <TextBox DockPanel.Dock="Top"
+                 Classes="search"
+                 Text="{Binding SearchText}"
+                 PlaceholderText="Search">
+            <TextBox.InnerLeftContent>
+                <PathIcon Data="{StaticResource SearchIconGeometry}"
+                          Width="14" Height="14"
+                          Margin="10,0,2,0"
+                          Foreground="{StaticResource TextMutedBrush}" />
+            </TextBox.InnerLeftContent>
+        </TextBox>
+
+        <!-- Load progress / failures. Declared before the TreeView so the tree stays the
+             DockPanel's fill child; takes no space at all while StatusMessage is null. -->
+        <TextBlock DockPanel.Dock="Bottom"
+                   Classes="status"
+                   Margin="2,10,0,0"
+                   Text="{Binding StatusMessage}"
+                   TextTrimming="CharacterEllipsis"
+                   IsVisible="{Binding StatusMessage, Converter={x:Static converters:StringConverters.IsNotNullOrEmpty}}" />
+
+        <TreeView Margin="0,18,0,0"
+                  Background="Transparent"
+                  ItemsSource="{Binding Archives}"
+                  SelectedItem="{Binding SelectedNode}">
+            <TreeView.DataTemplates>
+                <TreeDataTemplate DataType="vm:ArchiveNodeViewModel" ItemsSource="{Binding Children}">
+                    <TextBlock Classes="archive" Text="{Binding Name}" />
+                </TreeDataTemplate>
+                <TreeDataTemplate DataType="vm:EntryNodeViewModel" ItemsSource="{Binding Children}">
+                    <TextBlock Classes="entry" Text="{Binding Name}" />
+                </TreeDataTemplate>
+                <DataTemplate DataType="vm:AssetNodeViewModel">
+                    <TextBlock Classes="asset" Text="{Binding Name}" />
+                </DataTemplate>
+                <DataTemplate DataType="vm:MessageNode">
+                    <TextBlock Classes="message" Text="{Binding Name}" />
+                </DataTemplate>
+            </TreeView.DataTemplates>
+        </TreeView>
+    </DockPanel>
+</UserControl>

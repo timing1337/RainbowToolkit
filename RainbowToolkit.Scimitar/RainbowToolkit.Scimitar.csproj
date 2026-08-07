@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <!-- Deploy the native Oodle decompressor next to any consumer's exe, under the
+       Dependencies/ subpath its [DllImport] expects. Flows transitively to the UI. -->
+  <ItemGroup>
+    <None Include="..\Dependencies\Native\oo2core_8_win64.dll" Link="Dependencies\oo2core_8_win64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dependencies\Cast.NET\Cast.NET.csproj" />
+  </ItemGroup>
+
+</Project>
