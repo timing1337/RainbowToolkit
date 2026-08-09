@@ -1,8 +1,10 @@
 
 using RainbowToolkit.Scimitar.Classes;
+using RainbowToolkit.Scimitar.Classes.Types.Shaders;
 using RainbowToolkit.Scimitar.Utils;
 using System.Drawing;
 using System.Numerics;
+using System.Text.Json.Serialization;
 
 namespace RainbowToolkit.Scimitar.Classes.Types;
 
@@ -10,15 +12,17 @@ public class Material : BaseObject {
     public static readonly uint MAGIC = 0x9BFBCAA8;
     protected override uint Magic => MAGIC;
 
-    public TextureSelector? DiffuseMap;
-    public TextureSelector? NormalMap;
-    public TextureSelector? SpecularMap;
+    public ulong ShaderTemplateUid;
+    public Vector4 DiffuseColor;
 
+    [JsonIgnore] public TextureSelector? DiffuseMap;
+    [JsonIgnore] public TextureSelector? NormalMap;
+    [JsonIgnore] public TextureSelector? SpecularMap;
     public DetailMapDescriptor? DetailMap;
     public DetailMapDescriptor? DetailMap2;
 
-    public ulong ShaderTemplateUid;
-    public Vector4 DiffuseColor;
+    public CharacterShaderParams? CharacterShaderParams;
+    public CharacterSkinShaderParams? CharacterSkinShaderParams;
 
     // Unknown sections: count * size
     // Unknown object skips: uid + magic + actual size
@@ -37,13 +41,16 @@ public class Material : BaseObject {
         var collisionMaterialUid = reader.ReadUInt64();
 
         reader.Advance(8 + 4 + 16); // Some object here...
-        reader.Advance(8 + 4 + 1);
-
+        var mask = reader.Read<Mask>();
         reader.Advance(4 * 2);
+        var shaderParam = reader.ReadNullable();
+        if (shaderParam is CharacterShaderParams characterShaderParams) {
+            CharacterShaderParams = characterShaderParams;
+        }else if(shaderParam is CharacterSkinShaderParams characterSkinShaderParams) {
+            CharacterSkinShaderParams = characterSkinShaderParams;
+        }
 
-        var characterShaderParams = reader.ReadNullable();
         var unkObj0 = reader.ReadNullable();
-
         reader.Advance(4 * 1);
         reader.Advance(2 * 4);
         reader.Advance(1);
@@ -66,7 +73,6 @@ public class Material : BaseObject {
         var unk5 = reader.ReadUInt32();
         var unk6 = reader.ReadStruct<Vector2>();
         var referenceUid = reader.ReadUInt64();
-
 
         var unk7 = reader.Read<TextureSelector>();
         var unk8 = reader.Read<TextureSelector>();
@@ -107,6 +113,5 @@ public class Material : BaseObject {
         reader.Advance(1);
 
         var unk15 = reader.ReadUInt32();
-        Console.WriteLine("unk15: " + unk15);
     }
 }

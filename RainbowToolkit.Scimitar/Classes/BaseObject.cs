@@ -2,11 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace RainbowToolkit.Scimitar.Classes;
 
 public abstract class BaseObject {
     public ulong Uid;
+
+    [JsonIgnore]
     protected abstract uint Magic { get; }
 
     public void Read(FastLoadReader reader) {

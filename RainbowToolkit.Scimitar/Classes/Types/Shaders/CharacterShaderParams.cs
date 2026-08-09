@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace RainbowToolkit.Scimitar.Classes.Types.Shaders;
 
@@ -12,19 +13,33 @@ public class CharacterShaderParams : BaseObject {
     public static readonly uint MAGIC = 0xf2ce7e39;
     protected override uint Magic => MAGIC;
 
+    [JsonIgnore] public TextureSelector PatternTexture;
+    public Vector4 PatternTintA;
+    public Vector4 PatternTintB;
+    public Vector2 PatternUVScale;
+
+    [JsonIgnore] public TextureSelector DyeMaskTexture;
+    public Vector4 DyeBaseColor;
+    public Vector4 DyeRedColor;
+    public Vector4 DyeGreenColor;
+    public Vector4 DyeBlueColor;
+
+    public Vector4 FlatTint;
+    public Vector3 Unk8;
+
     public override void Parse(FastLoadReader reader) {
-        var patternTexture = reader.Read<TextureSelector>();
-        var patternTintA = reader.ReadStruct<Vector4>();
-        var patternTintB = reader.ReadStruct<Vector4>();
-        var patternUVScale = reader.ReadStruct<Vector2>();
+        PatternTexture = reader.Read<TextureSelector>();
+        PatternTintA = reader.ReadStruct<Vector4>();
+        PatternTintB = reader.ReadStruct<Vector4>();
+        PatternUVScale = reader.ReadStruct<Vector2>();
 
-        var dyeMaskTexture = reader.Read<TextureSelector>();
-        var dyeBaseColor = reader.ReadStruct<Vector4>();
-        var dyeRedColor = reader.ReadStruct<Vector4>();
-        var dyeGreenColor = reader.ReadStruct<Vector4>();
-        var dyeBlueColor = reader.ReadStruct<Vector4>();
+        DyeMaskTexture = reader.Read<TextureSelector>();
+        DyeBaseColor = reader.ReadStruct<Vector4>();
+        DyeRedColor = reader.ReadStruct<Vector4>();
+        DyeGreenColor = reader.ReadStruct<Vector4>();
+        DyeBlueColor = reader.ReadStruct<Vector4>();
 
-        var flatTint = reader.ReadStruct<Vector4>();
-        var unk8 = reader.ReadStruct<Vector3>();
+        FlatTint = reader.ReadStruct<Vector4>();
+        Unk8 = reader.ReadStruct<Vector3>();
     }
 }
