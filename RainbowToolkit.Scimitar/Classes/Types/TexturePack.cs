@@ -26,12 +26,4 @@ public class TexturePack {
             FutureResUid = futureResUid
         };
     }
-
-    public ulong GetHighestAvailableUid() {
-        if (FutureResUid != 0) return FutureResUid;
-        if (UltraResUid != 0) return UltraResUid;
-        if (HighResUid != 0) return HighResUid;
-        if (MediumResUid != 0) return MediumResUid;
-        return LowResUid;
-    }
 }

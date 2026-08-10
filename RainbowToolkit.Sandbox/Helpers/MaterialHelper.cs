@@ -15,6 +15,41 @@ public class MaterialHelper {
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
 
+    public static CompiledTextureMapObject? FindCompiledTextureMap(ulong uid) {
+        var container = ScimitarManager.Instance.FindAssetContainer(uid);
+        if (container != null) {
+            return container.ReadAsset(uid).As<CompiledTextureMapObject>()!;
+        }
+
+        return null;
+    }
+
+    public static CompiledTextureMapObject? GetHighestAvailableMip(TextureMap textureMap) {
+        var pack1 = textureMap.Pack1;
+        CompiledTextureMapObject? mip = null;
+        if (pack1.FutureResUid != 0 && (mip = FindCompiledTextureMap(pack1.FutureResUid)) != null) {
+            return mip;
+        }
+
+        if(pack1.UltraResUid != 0 && (mip = FindCompiledTextureMap(pack1.UltraResUid)) != null) {
+            return mip;
+        }
+
+        if(pack1.HighResUid != 0 && (mip = FindCompiledTextureMap(pack1.HighResUid)) != null) {
+            return mip;
+        }
+
+        if(pack1.MediumResUid != 0 && (mip = FindCompiledTextureMap(pack1.MediumResUid)) != null) {
+            return mip;
+        }
+
+        if(pack1.LowResUid != 0 && (mip = FindCompiledTextureMap(pack1.LowResUid)) != null) {
+            return mip;
+        }
+
+        return mip;
+    }
+
     public static void ExportMaterialInfo(AssetContainer container, Material material, string path) {
         if (material.DiffuseMap != null) ExportTextureSelector(container, material.DiffuseMap, Path.Join(path, $"diffuse.dds"));
         if (material.SpecularMap != null) ExportTextureSelector(container, material.SpecularMap, Path.Join(path, $"specular.dds"));
@@ -42,12 +77,11 @@ public class MaterialHelper {
 
     public static void ExportTextureSpec(AssetContainer container, TextureMapSpec spec, string path) {
         var textureMap = container.ReadAsset(spec.TextureMapUid).As<TextureMap>()!;
-        var highestMip = textureMap.Pack1.GetHighestAvailableUid();
-        var compiled = ScimitarManager.Instance.FindAssetContainer(highestMip);
-        if (compiled == null) {
-            throw new Exception("Compiled texture map not found for highest mip level.");
+        var compiledTextureMap = GetHighestAvailableMip(textureMap);
+
+        if(compiledTextureMap == null) {
+            throw new Exception($"No compiled texture map found for {spec.TextureMapUid}");
         }
-        var compiledTextureMap = compiled.ReadAsset(highestMip).As<CompiledTextureMapObject>()!;
 
         var dds = ImageHelper.ExportHeader(compiledTextureMap.CompiledTextureMap);
         var buffer = compiledTextureMap.CompiledTextureMap.Data.ImageBuffer;
