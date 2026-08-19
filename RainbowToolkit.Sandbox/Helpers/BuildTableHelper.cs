@@ -48,6 +48,8 @@ public static class BuildTableHelper {
                 asset = foundContainer.ReadAsset(dynamicProp.ValueUid);
             }
 
+            Console.WriteLine("Exporting asset with UID: " + dynamicProp.ValueUid);
+
             if (asset == null) {
                 throw new Exception($"Could not find asset with UID {dynamicProp.ValueUid} in any container.");
             }
@@ -57,6 +59,8 @@ public static class BuildTableHelper {
                 skel.Add(skeleton);
             } else if (assetObj is Mesh mesh) {
                 meshes.Add(mesh);
+            } else {
+
             }
         }
 

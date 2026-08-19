@@ -1,10 +1,11 @@
 namespace RainbowToolkit.Scimitar.Classes.Types;
 
 public class Mask : BaseObject {
-    public static readonly uint MAGIC = 0xFA88EC25;
+    public static readonly uint MAGIC = 0xdf5d6c0e;
     protected override uint Magic => MAGIC;
 
+    public byte Unk;
     public override void Parse(FastLoadReader reader) {
-        var unk = reader.ReadByte();
+        Unk = reader.ReadByte();
     }
 }

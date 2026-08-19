@@ -3,7 +3,7 @@ using RainbowToolkit.Scimitar.Enums;
 
 namespace RainbowToolkit.Scimitar.Classes.Types;
 public class TextureMap : BaseObject {
-    public static readonly uint MAGIC = 0x3C7E34FD;
+    public static readonly uint MAGIC = 0xa2b7e917;
     protected override uint Magic => MAGIC;
 
     public uint MapType;

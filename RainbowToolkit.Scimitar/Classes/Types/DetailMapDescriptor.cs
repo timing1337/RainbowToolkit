@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace RainbowToolkit.Scimitar.Classes.Types;
 
 public class DetailMapDescriptor : BaseObject {
-    public static readonly uint MAGIC = 0x7284181B;
+    public static readonly uint MAGIC = 0x7799a6d5;
     protected override uint Magic => MAGIC;
 
     [JsonIgnore] public ulong TextureBaseUid;

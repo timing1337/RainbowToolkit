@@ -6,7 +6,7 @@ using System.Text;
 namespace RainbowToolkit.Scimitar.Classes.Types;
 
 public class PropertyPath : BaseObject {
-    public static readonly uint MAGIC = 0xE457AE48;
+    public static readonly uint MAGIC = 0x3c00b2e0;
     protected override uint Magic => MAGIC;
 
     public PropertyPathNode[] Nodes = [];

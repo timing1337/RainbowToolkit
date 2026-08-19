@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace RainbowToolkit.Scimitar.Classes.Types.Bones.Modifiers;
-public class BoneModifier_0x9666EE78 : BaseObject {
-    public static readonly uint MAGIC = 0x655CB45B;
+
+public class ConstraintBoneModifier : BoneModifier {
+    public new static readonly uint MAGIC = 0;
     protected override uint Magic => MAGIC;
     public override void Parse(FastLoadReader reader) {
-        var unk0 = reader.ReadNullable();
+        base.Parse(reader);
         var unk1 = reader.ReadUInt32();
+        for (int i = 0; i < unk1; i++) {
+            reader.ReadNullable();
+        }
+        var unk2 = reader.ReadByte();
     }
 }
-

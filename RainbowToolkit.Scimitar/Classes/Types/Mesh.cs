@@ -5,7 +5,7 @@ using System.Numerics;
 namespace RainbowToolkit.Scimitar.Classes.Types;
 
 public class Mesh : BaseObject {
-    public static readonly uint MAGIC = 0xF5C0AFD3;
+    public static readonly uint MAGIC = 0x415d9568;
     protected override uint Magic => MAGIC;
 
     public uint Category;
@@ -22,6 +22,7 @@ public class Mesh : BaseObject {
             MeshBones[i] = reader.Read<MeshBone>();
         }
 
+        Console.WriteLine($"Mesh has {meshBoneCount} bones.");
         MultiLodSetupUid = reader.ReadUInt64();
         var unk0 = reader.ReadByte();
         CompiledMeshObjectUid = reader.ReadUInt64();

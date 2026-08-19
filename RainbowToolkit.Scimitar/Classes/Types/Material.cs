@@ -9,7 +9,7 @@ using System.Text.Json.Serialization;
 namespace RainbowToolkit.Scimitar.Classes.Types;
 
 public class Material : BaseObject {
-    public static readonly uint MAGIC = 0x9BFBCAA8;
+    public static readonly uint MAGIC = 0x85c817c3;
     protected override uint Magic => MAGIC;
 
     public ulong ShaderTemplateUid;
@@ -23,6 +23,8 @@ public class Material : BaseObject {
 
     public CharacterShaderParams? CharacterShaderParams;
     public CharacterSkinShaderParams? CharacterSkinShaderParams;
+
+    public Mask? Mask;
 
     // Unknown sections: count * size
     // Unknown object skips: uid + magic + actual size
@@ -41,7 +43,7 @@ public class Material : BaseObject {
         var collisionMaterialUid = reader.ReadUInt64();
 
         reader.Advance(8 + 4 + 16); // Some object here...
-        var mask = reader.Read<Mask>();
+        Mask = reader.Read<Mask>();
         reader.Advance(4 * 2);
         var shaderParam = reader.ReadNullable();
         if (shaderParam is CharacterShaderParams characterShaderParams) {

@@ -7,7 +7,7 @@ using System.Text;
 namespace RainbowToolkit.Scimitar.Classes.Types;
 
 public class BoneInitialTransforms : BaseObject {
-    public static readonly uint MAGIC = 0x710755B9;
+    public static readonly uint MAGIC = 0x6350e5a6;
     protected override uint Magic => MAGIC;
 
     public Matrix4x4 Transform;

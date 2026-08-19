@@ -10,6 +10,7 @@ namespace RainbowToolkit.Scimitar.Assets;
 public class Asset {
     public FastLoadReader Reader;
     public string Name;
+    public uint ClassId;
     public ushort Flags;
     public uint DataLength;
     public BaseObject? Data;
@@ -20,14 +21,18 @@ public class Asset {
         Flags = reader.ReadUInt16();
         Name = Convert.ToHexString(reader.ReadBytes(nameLength));
         DataLength = reader.ReadUInt32();
-        var classId = reader.ReadUInt32();
-
-        if (ClassRegistry.RegisteredClasses.ContainsKey(classId)) {
-            Data = reader.ReadObject();
-        }
+        ClassId = reader.ReadUInt32();
+        Data = Reader.ReadObject();
     }
 
     public T? As<T>() where T : BaseObject {
+        if(Data == null) {
+            Data = Reader.ReadObject();
+        }
         return Data as T;
+    }
+
+    public byte[] ReadRaw() {
+        return Reader.ReadBytes((int)DataLength);
     }
 }

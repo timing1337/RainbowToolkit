@@ -12,7 +12,7 @@ public class FacialPoseGroup : BaseObject {
     public override void Parse(FastLoadReader reader) {
         var count = reader.ReadUInt32();
         for (int i = 0; i < count; i++) {
-            reader.ReadNullable();
+            //reader.ReadNullable();
         }
     }
 }

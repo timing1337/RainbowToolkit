@@ -31,19 +31,19 @@ public class MaterialHelper {
             return mip;
         }
 
-        if(pack1.UltraResUid != 0 && (mip = FindCompiledTextureMap(pack1.UltraResUid)) != null) {
+        if (pack1.UltraResUid != 0 && (mip = FindCompiledTextureMap(pack1.UltraResUid)) != null) {
             return mip;
         }
 
-        if(pack1.HighResUid != 0 && (mip = FindCompiledTextureMap(pack1.HighResUid)) != null) {
+        if (pack1.HighResUid != 0 && (mip = FindCompiledTextureMap(pack1.HighResUid)) != null) {
             return mip;
         }
 
-        if(pack1.MediumResUid != 0 && (mip = FindCompiledTextureMap(pack1.MediumResUid)) != null) {
+        if (pack1.MediumResUid != 0 && (mip = FindCompiledTextureMap(pack1.MediumResUid)) != null) {
             return mip;
         }
 
-        if(pack1.LowResUid != 0 && (mip = FindCompiledTextureMap(pack1.LowResUid)) != null) {
+        if (pack1.LowResUid != 0 && (mip = FindCompiledTextureMap(pack1.LowResUid)) != null) {
             return mip;
         }
 
@@ -63,10 +63,19 @@ public class MaterialHelper {
             ExportDetailMap(container, material.DetailMap2, Path.Join(path, $"detail_2.dds"));
         }
 
-        if(material.CharacterSkinShaderParams != null && material.CharacterSkinShaderParams.SkinSurfaceScatteringMapUid != 0) {
+        if (material.CharacterSkinShaderParams != null && material.CharacterSkinShaderParams.SkinSurfaceScatteringMapUid != 0) {
             ExportTextureSpecFromUid(container, material.CharacterSkinShaderParams.SkinSurfaceScatteringMapUid, Path.Join(path, $"skin_surface_scattering.dds"));
         }
 
+        if (material.CharacterShaderParams != null) {
+            if (material.CharacterShaderParams.PatternTexture.TextureBaseUid != 0) {
+                ExportTextureSpecFromUid(container, material.CharacterShaderParams.PatternTexture.TextureBaseUid, Path.Join(path, $"pattern.dds"));
+            }
+
+            if (material.CharacterShaderParams.DyeMaskTexture.TextureBaseUid != 0) {
+                ExportTextureSpecFromUid(container, material.CharacterShaderParams.DyeMaskTexture.TextureBaseUid, Path.Join(path, $"dye_mask.dds"));
+            }
+        }
         File.WriteAllText(Path.Join(path, $"material_config.json"), JsonSerializer.Serialize(material, Options));
     }
 
@@ -79,7 +88,7 @@ public class MaterialHelper {
         var textureMap = container.ReadAsset(spec.TextureMapUid).As<TextureMap>()!;
         var compiledTextureMap = GetHighestAvailableMip(textureMap);
 
-        if(compiledTextureMap == null) {
+        if (compiledTextureMap == null) {
             throw new Exception($"No compiled texture map found for {spec.TextureMapUid}");
         }
 
