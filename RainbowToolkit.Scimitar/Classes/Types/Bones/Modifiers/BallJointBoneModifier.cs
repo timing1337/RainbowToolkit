@@ -6,7 +6,7 @@ using System.Text;
 
 namespace RainbowToolkit.Scimitar.Classes.Types.Bones.Modifiers;
 
-public class BoneModifier_0xA4F64286 : BoneModifier_Unk0 {
+public class BallJointBoneModifier : BoneModifier {
     public new static readonly uint MAGIC = 0xB0DDD122;
     protected override uint Magic => MAGIC;
     public override void Parse(FastLoadReader reader) {
