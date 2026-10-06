@@ -5,7 +5,7 @@ using RainbowToolkit.Scimitar.Enums;
 namespace RainbowToolkit.Scimitar.Classes.Types;
 
 public class PropertyPathNode : BaseObject {
-    public static readonly uint MAGIC = 0xD26BFC71;
+    public static readonly uint MAGIC = 0xF810FA82;
     protected override uint Magic => MAGIC;
 
     public ushort Index;

@@ -5,7 +5,7 @@ using System.Numerics;
 namespace RainbowToolkit.Scimitar.Classes.Types;
 
 public class Mesh : BaseObject {
-    public static readonly uint MAGIC = 0xF5C0AFD3;
+    public static readonly uint MAGIC = 0x4E7F1BB4;
     protected override uint Magic => MAGIC;
 
     public uint Category;

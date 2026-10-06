@@ -38,7 +38,7 @@ public static class BuildTableHelper {
         foreach (var dynamicProp in row.DynamicProperties) {
             Asset? asset = null;
 
-            if(dynamicProp.ValueUid == 0) {
+            if (dynamicProp.ValueUid == 0) {
                 continue;
             }
 
@@ -78,6 +78,9 @@ public static class BuildTableHelper {
     }
 
     public static void ExportCharacterBuildTable(AssetContainer container, BuildTable buildTable, string path) {
+        if(!Directory.Exists(path)) {
+            Directory.CreateDirectory(path);
+        }
         var row = buildTable.Rows.FirstOrDefault();
         if (row == null) {
             throw new Exception("Character build table has no rows.");

@@ -5,7 +5,7 @@ using System.Text;
 namespace RainbowToolkit.Scimitar.Classes.Types;
 
 public class BuildTable : BaseObject {
-    public static readonly uint MAGIC = 0xB4361608;
+    public static readonly uint MAGIC = 0xADE00798;
     protected override uint Magic => MAGIC;
 
     public BuildColumn[] Columns = [];

@@ -4,8 +4,8 @@ using System.Text;
 
 namespace RainbowToolkit.Scimitar.Classes.Types.Bones.Modifiers;
 
-public class RotationExpressionModifier : BoneModifier_Unk0 {
-    public new static readonly uint MAGIC = 0x5A9E38D3;
+public class RotationExpressionModifier : BoneModifier {
+    public new static readonly uint MAGIC = 0x41E35FF3;
     protected override uint Magic => MAGIC;
     public override void Parse(FastLoadReader reader) {
         base.Parse(reader);

@@ -21,9 +21,6 @@ public sealed class FastLoadReader : BinaryReader {
     public BaseObject ReadObject() {
         var uid = ReadUInt64();
         var classId = ReadUInt32();
-        if(uid == 4160749595) {
-            Console.WriteLine("Class ID: {0}", classId);
-        }
         return Parse(classId, uid);
     }
 

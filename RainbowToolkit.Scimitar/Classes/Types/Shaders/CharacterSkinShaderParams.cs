@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 namespace RainbowToolkit.Scimitar.Classes.Types.Shaders;
 
 public class CharacterSkinShaderParams : BaseObject {
-    public static readonly uint MAGIC = 0x85A2678A;
+    public static readonly uint MAGIC = 0xF6348091;
     protected override uint Magic => MAGIC;
 
     [JsonIgnore]
