@@ -6,14 +6,14 @@ using System.Text.Json.Serialization;
 namespace RainbowToolkit.Scimitar.Classes.Types.Shaders;
 
 public class CharacterSkinShaderParams : BaseObject {
-    public static readonly uint MAGIC = 0xF6348091;
+    public static readonly uint MAGIC = 0x85A2678A;
     protected override uint Magic => MAGIC;
 
     [JsonIgnore]
     public ulong SkinSurfaceScatteringMapUid;
 
     public float Unk0;
-    public uint Unk1;
+    public float Unk1;
     public float Unk2;
 
     public override void Parse(FastLoadReader reader) {
@@ -25,7 +25,7 @@ public class CharacterSkinShaderParams : BaseObject {
         var unk6 = reader.ReadUInt64(); // ?
 
         Unk0 = reader.ReadSingle();
-        Unk1 = reader.ReadUInt32();
+        Unk1 = reader.ReadSingle();
         Unk2 = reader.ReadSingle();
     }
 }
