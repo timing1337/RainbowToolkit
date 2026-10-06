@@ -1,3 +1,3 @@
 # RainbowToolkit
 
-Current version: Y11S2.3 (4/8/2026).
+Current version: Y11S3.1.1_C9918362_D2393360_S125761_118144515
