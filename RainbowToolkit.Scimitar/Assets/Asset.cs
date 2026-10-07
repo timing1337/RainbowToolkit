@@ -23,7 +23,7 @@ public class Asset {
         DataLength = reader.ReadUInt32();
         ClassId = reader.ReadUInt32();
 
-        if (ClassRegistry.RegisteredClasses.ContainsKey(classId)) {
+        if (ClassRegistry.RegisteredClasses.ContainsKey(ClassId)) {
             Data = reader.ReadObject();
         }
     }
