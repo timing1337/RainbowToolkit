@@ -18,6 +18,7 @@ public class Material : BaseObject {
     [JsonIgnore] public TextureSelector? DiffuseMap;
     [JsonIgnore] public TextureSelector? NormalMap;
     [JsonIgnore] public TextureSelector? SpecularMap;
+    [JsonIgnore] public TextureSelector? ColorMask;
     public DetailMapDescriptor? DetailMap;
     public DetailMapDescriptor? DetailMap2;
 
@@ -68,7 +69,7 @@ public class Material : BaseObject {
         NormalMap = reader.Read<TextureSelector>(); // Normal
         SpecularMap = reader.Read<TextureSelector>(); // Specular
         var unk2 = reader.Read<TextureSelector>();
-        var unk3 = reader.Read<TextureSelector>();
+        ColorMask = reader.Read<TextureSelector>(); // Color Mask
         var unk4 = reader.Read<UvTransform>();
         var unk5 = reader.ReadUInt32();
         var unk6 = reader.ReadStruct<Vector2>();

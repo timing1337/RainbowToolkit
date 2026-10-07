@@ -12,6 +12,7 @@ public class Asset {
     public string Name;
     public ushort Flags;
     public uint DataLength;
+    public uint ClassId;
     public BaseObject? Data;
 
     public Asset(FastLoadReader reader) {
@@ -20,7 +21,7 @@ public class Asset {
         Flags = reader.ReadUInt16();
         Name = Convert.ToHexString(reader.ReadBytes(nameLength));
         DataLength = reader.ReadUInt32();
-        var classId = reader.ReadUInt32();
+        ClassId = reader.ReadUInt32();
 
         if (ClassRegistry.RegisteredClasses.ContainsKey(classId)) {
             Data = reader.ReadObject();
@@ -28,6 +29,9 @@ public class Asset {
     }
 
     public T? As<T>() where T : BaseObject {
+        if(Data == null) {
+            Data = Reader.ReadObject();
+        }
         return Data as T;
     }
 }
