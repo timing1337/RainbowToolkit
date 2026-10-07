@@ -60,7 +60,12 @@ public static class BuildTableHelper {
             }
         }
 
-        foreach(var meshobj in meshes) {
+        var materialsPath = Path.Combine(path, "materials");
+        if (!Directory.Exists(materialsPath)) {
+            Directory.CreateDirectory(materialsPath);
+        }
+
+        foreach (var meshobj in meshes) {
             // Export mesh first
             var compiledMeshObjAsset = ScimitarManager.Instance.FindAssetContainer(meshobj.CompiledMeshObjectUid)?.ReadAsset(meshobj.CompiledMeshObjectUid);
             if (compiledMeshObjAsset == null) {
@@ -71,22 +76,33 @@ public static class BuildTableHelper {
             var modelNode = MeshHelper.ExportLod(meshobj, compiledMeshObj, 0, materialOverrides);
             MeshHelper.PopulateSkeleton(modelNode, meshobj, skel);
 
-            var root = new CastNode(CastNodeIdentifier.Root);
-            root.AddNode(modelNode);
-            CastWriter.Save(Path.Combine(path, $"mesh_{meshobj.Uid:X}.cast"), root);
+            foreach (var materialUid in meshobj.MaterialUids) {
+                var material = materialOverrides.GetValueOrDefault(materialUid);
+                if (material == null) {
+                    material = container.ReadAsset(materialUid).As<Material>();
+                }
+
+                if(material == null) {
+                    throw new Exception($"Could not find material with UID {materialUid} in any container.");
+                }
+
+                var materialPath = Path.Combine(materialsPath, $"material_{material.Uid:X}");
+                Directory.CreateDirectory(materialPath);
+                MaterialHelper.ExportMaterialInfo(container, material, materialPath);
+            }
         }
     }
 
     public static void ExportCharacterBuildTable(AssetContainer container, BuildTable buildTable, string path) {
         path = Path.Join(path, $"buildtable_{buildTable.Uid:X}");
-        if(!Directory.Exists(path)) {
+        if (!Directory.Exists(path)) {
             Directory.CreateDirectory(path);
         }
         var row = buildTable.Rows.FirstOrDefault();
         if (row == null) {
             throw new Exception("Character build table has no rows.");
         }
-        
+
         var meshTable = row.DynamicProperties.FirstOrDefault(prop => prop.PropertyId == 4 || prop.PropertyId == 17);
         var materialOverrideTable = row.DynamicProperties.FirstOrDefault(prop => prop.PropertyId == 5 || prop.PropertyId == 18);
 
@@ -103,14 +119,5 @@ public static class BuildTableHelper {
 
         var materialOverrides = RemapMaterialOverrideBuildTable(container, materialOverrideBuildTable);
         ExportMeshAndSkeleton(container, meshBuildTable, path, materialOverrides);
-
-        var materialsPath = Path.Combine(path, "materials");
-
-        Directory.CreateDirectory(materialsPath);
-        foreach (var material in materialOverrides.Values) {
-            var materialPath = Path.Combine(materialsPath, $"material_{material.Uid:X}");
-            Directory.CreateDirectory(materialPath);
-            MaterialHelper.ExportMaterialInfo(container, material, materialPath);
-        }
     }
 }

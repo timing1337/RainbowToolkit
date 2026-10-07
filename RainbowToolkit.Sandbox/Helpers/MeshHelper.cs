@@ -12,7 +12,7 @@ using System.Xml.Linq;
 namespace RainbowToolkit.Sandbox.Helpers;
 
 public static class MeshHelper {
-    public static ModelNode ExportLod(Mesh mesh, CompiledMeshObject meshObj, uint lodIndex, Dictionary<ulong, Material> materialOverrides) {
+    public static ModelNode ExportLod(Mesh mesh, CompiledMeshObject meshObj, uint lodIndex, Dictionary<ulong, Material>? materialOverrides) {
         var meshData = meshObj.Mesh.Data;
         if (meshData.Revision == 0) {
             throw new Exception("Unsupported revision.");
@@ -25,7 +25,9 @@ public static class MeshHelper {
             modelNode.AddNode(meshNode);
         }
 
-        RemapMaterial(modelNode, mesh, lodInfo, materialOverrides);
+        if(materialOverrides != null) {
+            RemapMaterial(modelNode, mesh, lodInfo, materialOverrides);
+        }
 
         return modelNode;
     }
@@ -82,7 +84,7 @@ public static class MeshHelper {
         }
     }
 
-    private static void RemapMaterial(ModelNode node, Mesh mesh, MeshLod lod, Dictionary<ulong, Material> materialOverrides) {
+    public static void RemapMaterial(ModelNode node, Mesh mesh, MeshLod lod, Dictionary<ulong, Material> materialOverrides) {
         for (int i = 0; i < lod.Primitives.Length; i++) {
             var primitive = lod.Primitives[i];
             var meshNode = node.Meshes[i];
