@@ -78,6 +78,7 @@ public static class BuildTableHelper {
     }
 
     public static void ExportCharacterBuildTable(AssetContainer container, BuildTable buildTable, string path) {
+        path = Path.Join(path, $"buildtable_{buildTable.Uid:X}");
         if(!Directory.Exists(path)) {
             Directory.CreateDirectory(path);
         }

@@ -10,8 +10,6 @@ public class MeshPrimitive {
     public uint VertexCount;
     public uint IndexCount;
     public uint IndexOffset;
-    public uint MaterialId;
-
 
     public static MeshPrimitive Read(BinaryReader reader) {
         var unk = reader.ReadUInt32();
@@ -19,7 +17,7 @@ public class MeshPrimitive {
         var vertexCount = reader.ReadUInt32();
         var indexOffset = reader.ReadUInt32();
         var indexCount = reader.ReadUInt32();
-        var materialId = reader.ReadUInt32();
+        var unk = reader.ReadUInt32();
         var unk5 = reader.ReadUInt32();
         var unk6 = reader.ReadUInt32();
         var unk7 = reader.ReadUInt32();
@@ -27,8 +25,7 @@ public class MeshPrimitive {
         return new MeshPrimitive() {
             VertexCount = vertexCount,
             IndexCount = indexCount,
-            IndexOffset = indexOffset,
-            MaterialId = materialId
+            IndexOffset = indexOffset
         };
     }
 }

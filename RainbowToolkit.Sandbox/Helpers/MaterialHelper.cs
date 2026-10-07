@@ -51,9 +51,9 @@ public class MaterialHelper {
     }
 
     public static void ExportMaterialInfo(AssetContainer container, Material material, string path) {
-        if (material.DiffuseMap != null) ExportTextureSelector(container, material.DiffuseMap, Path.Join(path, $"diffuse.dds"));
-        if (material.SpecularMap != null) ExportTextureSelector(container, material.SpecularMap, Path.Join(path, $"specular.dds"));
-        if (material.NormalMap != null) ExportTextureSelector(container, material.NormalMap, Path.Join(path, $"normal.dds"));
+        if (material.DiffuseMap != null && material.DiffuseMap.TextureBaseUid != 0) ExportTextureSelector(container, material.DiffuseMap, Path.Join(path, $"diffuse.dds"));
+        if (material.SpecularMap != null && material.SpecularMap.TextureBaseUid != 0) ExportTextureSelector(container, material.SpecularMap, Path.Join(path, $"specular.dds"));
+        if (material.NormalMap != null && material.NormalMap.TextureBaseUid != 0) ExportTextureSelector(container, material.NormalMap, Path.Join(path, $"normal.dds"));
 
         if (material.DetailMap != null && material.DetailMap.TextureBaseUid != 0) {
             ExportDetailMap(container, material.DetailMap, Path.Join(path, $"detail_1.dds"));

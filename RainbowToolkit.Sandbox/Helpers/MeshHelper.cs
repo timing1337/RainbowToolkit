@@ -86,7 +86,7 @@ public static class MeshHelper {
         for (int i = 0; i < lod.Primitives.Length; i++) {
             var primitive = lod.Primitives[i];
             var meshNode = node.Meshes[i];
-            var material = mesh.MaterialUids[primitive.MaterialId];
+            var material = mesh.MaterialUids[i];
 
             if (materialOverrides.ContainsKey(material)) {
                 material = materialOverrides[material].Uid;
