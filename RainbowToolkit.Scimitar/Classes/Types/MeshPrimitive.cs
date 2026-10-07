@@ -17,10 +17,10 @@ public class MeshPrimitive {
         var vertexCount = reader.ReadUInt32();
         var indexOffset = reader.ReadUInt32();
         var indexCount = reader.ReadUInt32();
-        var unk = reader.ReadUInt32();
         var unk5 = reader.ReadUInt32();
         var unk6 = reader.ReadUInt32();
         var unk7 = reader.ReadUInt32();
+        var unk8 = reader.ReadUInt32();
 
         return new MeshPrimitive() {
             VertexCount = vertexCount,
