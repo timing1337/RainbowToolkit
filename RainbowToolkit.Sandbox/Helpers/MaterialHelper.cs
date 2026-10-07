@@ -69,12 +69,12 @@ public class MaterialHelper {
 
         if(material.CharacterShaderParams != null) {
             var characterShaderParams = material.CharacterShaderParams;
-            if(characterShaderParams.PatternTexture != null && characterShaderParams.PatternTexture.Uid != 0) {
-                ExportTextureSelector(container, characterShaderParams.PatternTexture, Path.Join(path, $"camo.dds"));
+            if(characterShaderParams.PatternTexture != null && characterShaderParams.PatternTexture.TextureBaseUid != 0) {
+                ExportTextureSelector(container, characterShaderParams.PatternTexture, Path.Join(path, $"pattern.dds"));
             }
 
-            if (characterShaderParams.DyeMaskTexture != null && characterShaderParams.DyeMaskTexture.Uid != 0) {
-                ExportTextureSelector(container, characterShaderParams.DyeMaskTexture, Path.Join(path, $"dye_mask.dds"));
+            if (characterShaderParams.CamoTexture != null && characterShaderParams.CamoTexture.TextureBaseUid != 0) {
+                ExportTextureSelector(container, characterShaderParams.CamoTexture, Path.Join(path, $"camo.dds"));
             }
         }
 

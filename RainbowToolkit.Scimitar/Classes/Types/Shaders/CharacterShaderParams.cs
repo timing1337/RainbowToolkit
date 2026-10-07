@@ -18,7 +18,7 @@ public class CharacterShaderParams : BaseObject {
     public Vector4 PatternTintB;
     public Vector2 PatternUVScale;
 
-    [JsonIgnore] public TextureSelector DyeMaskTexture;
+    [JsonIgnore] public TextureSelector CamoTexture;
     public Vector4 DyeBaseColor;
     public Vector4 DyeRedColor;
     public Vector4 DyeGreenColor;
@@ -33,7 +33,7 @@ public class CharacterShaderParams : BaseObject {
         PatternTintB = reader.ReadStruct<Vector4>();
         PatternUVScale = reader.ReadStruct<Vector2>();
 
-        DyeMaskTexture = reader.Read<TextureSelector>();
+        CamoTexture = reader.Read<TextureSelector>();
         DyeBaseColor = reader.ReadStruct<Vector4>();
         DyeRedColor = reader.ReadStruct<Vector4>();
         DyeGreenColor = reader.ReadStruct<Vector4>();
