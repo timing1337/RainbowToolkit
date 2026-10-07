@@ -24,6 +24,7 @@ public class Material : BaseObject {
 
     public CharacterShaderParams? CharacterShaderParams;
     public CharacterSkinShaderParams? CharacterSkinShaderParams;
+    public HairShaderParams? HairShaderParams;
 
     // Unknown sections: count * size
     // Unknown object skips: uid + magic + actual size
@@ -49,6 +50,8 @@ public class Material : BaseObject {
             CharacterShaderParams = characterShaderParams;
         } else if (shaderParam is CharacterSkinShaderParams characterSkinShaderParams) {
             CharacterSkinShaderParams = characterSkinShaderParams;
+        }else if(shaderParam is HairShaderParams hairShaderParams) {
+            HairShaderParams = hairShaderParams;
         }
 
         var unkObj0 = reader.ReadNullable();

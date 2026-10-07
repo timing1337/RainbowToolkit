@@ -90,6 +90,11 @@ public static class BuildTableHelper {
                 Directory.CreateDirectory(materialPath);
                 MaterialHelper.ExportMaterialInfo(container, material, materialPath);
             }
+            
+            var root = new CastNode(CastNodeIdentifier.Root);
+            root.AddNode(modelNode);
+            CastWriter.Save(Path.Combine(path, $"mesh_{meshobj.Uid:X}.cast"), root);
+
         }
     }
 
