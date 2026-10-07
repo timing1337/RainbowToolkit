@@ -15,6 +15,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Zstandard.Net" Version="1.1.7" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Dependencies\Cast.NET\Cast.NET.csproj" />
   </ItemGroup>
 
