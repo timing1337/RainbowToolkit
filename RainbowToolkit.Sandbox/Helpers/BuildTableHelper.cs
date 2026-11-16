@@ -23,6 +23,59 @@ public static class BuildTableHelper {
         }
         return materialOverrides;
     }
+
+    private static void ExportChildBuildTable(AssetDirectory assets, BuildTable buildTable, string path) {
+        var row = buildTable.Rows.FirstOrDefault();
+        if (row == null) {
+            return;
+        }
+
+        List<Skeleton> skel = new();
+        List<Mesh> meshes = new();
+
+        foreach (var dynamicProp in row.DynamicProperties) {
+            if (dynamicProp.ValueUid == 0) {
+                continue;
+            }
+
+            if (dynamicProp.ValueUid == 0) {
+                continue;
+            }
+
+            var asset = assets.Find(dynamicProp.ValueUid)
+                ?? throw new Exception($"Could not find asset with UID {dynamicProp.ValueUid:X} in any container.");
+
+            var assetObj = asset.Data;
+            if (assetObj is Skeleton skeleton) {
+                skel.Add(skeleton);
+            } else if (assetObj is Mesh mesh) {
+                meshes.Add(mesh);
+            }
+        }
+        var materialsPath = Path.Combine(path, "materials");
+        if (!Directory.Exists(materialsPath)) {
+            Directory.CreateDirectory(materialsPath);
+        }
+
+        foreach (var meshobj in meshes) {
+            // Export mesh first
+            var compiledMeshObj = assets.Get<CompiledMeshObject>(meshobj.CompiledMeshObjectUid);
+            var modelNode = MeshHelper.ExportLod(meshobj, compiledMeshObj, 0, null);
+            MeshHelper.PopulateSkeleton(modelNode, meshobj, skel);
+
+            foreach (var materialUid in meshobj.MaterialUids) {
+                var material = assets.Get<Material>(materialUid);
+                var materialPath = Path.Combine(materialsPath, $"material_{material.Uid:X}");
+                Directory.CreateDirectory(materialPath);
+                MaterialHelper.ExportMaterialInfo(assets, material, materialPath);
+            }
+
+            var root = new CastNode(CastNodeIdentifier.Root);
+            root.AddNode(modelNode);
+            CastWriter.Save(Path.Combine(path, $"mesh_{meshobj.Uid:X}.cast"), root);
+        }
+    }
+
     private static void ExportMeshAndSkeleton(
         AssetDirectory assets, BuildTable buildTable,
         string path, Dictionary<ulong, Material> materialOverrides) {
@@ -41,13 +94,13 @@ public static class BuildTableHelper {
             var asset = assets.Find(dynamicProp.ValueUid)
                 ?? throw new Exception($"Could not find asset with UID {dynamicProp.ValueUid:X} in any container.");
 
-            Console.WriteLine($"{dynamicProp.ValueUid:X} {asset.ClassId:X}");
-
             var assetObj = asset.Data;
             if (assetObj is Skeleton skeleton) {
                 skel.Add(skeleton);
             } else if (assetObj is Mesh mesh) {
                 meshes.Add(mesh);
+            }else if(assetObj is BuildTable childBuildTable) {
+                ExportChildBuildTable(assets, childBuildTable, path);
             }
         }
 
@@ -73,7 +126,6 @@ public static class BuildTableHelper {
             var root = new CastNode(CastNodeIdentifier.Root);
             root.AddNode(modelNode);
             CastWriter.Save(Path.Combine(path, $"mesh_{meshobj.Uid:X}.cast"), root);
-
         }
     }
 

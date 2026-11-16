@@ -40,7 +40,7 @@ public static class MeshHelper {
             var meshBone = mesh.MeshBones[i];
             var bone = allBones.FirstOrDefault(b => b.BoneId == meshBone.BoneId);
             var boneNode = skeletonNode.AddNode<BoneNode>();
-            boneNode.Name = $"bone_{meshBone.BoneId:X}";
+            boneNode.Name = BoneNames.Get(meshBone.BoneId);
             Matrix4x4 childGlobal;
             Matrix4x4.Invert(meshBone.Transform, out childGlobal);
 
