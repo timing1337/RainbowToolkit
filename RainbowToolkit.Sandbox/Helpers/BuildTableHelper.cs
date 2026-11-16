@@ -60,7 +60,7 @@ public static class BuildTableHelper {
         foreach (var meshobj in meshes) {
             // Export mesh first
             var compiledMeshObj = assets.Get<CompiledMeshObject>(meshobj.CompiledMeshObjectUid);
-            var modelNode = MeshHelper.ExportLod(meshobj, compiledMeshObj, 0, null);
+            var modelNode = MeshHelper.ExportLod(meshobj, compiledMeshObj, 0, new());
             MeshHelper.PopulateSkeleton(modelNode, meshobj, skel);
 
             foreach (var materialUid in meshobj.MaterialUids) {
