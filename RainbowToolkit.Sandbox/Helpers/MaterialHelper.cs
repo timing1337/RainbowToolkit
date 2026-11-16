@@ -1,6 +1,6 @@
+using RainbowToolkit.Scimitar;
 using RainbowToolkit.Scimitar.Classes.Types;
 using RainbowToolkit.Scimitar.Classes.Types.Compiled;
-using RainbowToolkit.Scimitar.Container;
 using System.Numerics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -15,80 +15,75 @@ public class MaterialHelper {
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
 
-    public static CompiledTextureMapObject? FindCompiledTextureMap(ulong uid) {
-        var container = ScimitarManager.Instance.FindAssetContainer(uid);
-        if (container != null) {
-            return container.ReadAsset(uid).As<CompiledTextureMapObject>()!;
-        }
-
-        return null;
+    public static CompiledTextureMapObject? FindCompiledTextureMap(AssetDirectory assets, ulong uid) {
+        return assets.Find(uid)?.As<CompiledTextureMapObject>();
     }
 
-    public static CompiledTextureMapObject? GetHighestAvailableMip(TextureMap textureMap) {
+    public static CompiledTextureMapObject? GetHighestAvailableMip(AssetDirectory assets, TextureMap textureMap) {
         var pack1 = textureMap.Pack1;
         CompiledTextureMapObject? mip = null;
-        if (pack1.FutureResUid != 0 && (mip = FindCompiledTextureMap(pack1.FutureResUid)) != null) {
+        if (pack1.FutureResUid != 0 && (mip = FindCompiledTextureMap(assets, pack1.FutureResUid)) != null) {
             return mip;
         }
 
-        if(pack1.UltraResUid != 0 && (mip = FindCompiledTextureMap(pack1.UltraResUid)) != null) {
+        if(pack1.UltraResUid != 0 && (mip = FindCompiledTextureMap(assets, pack1.UltraResUid)) != null) {
             return mip;
         }
 
-        if(pack1.HighResUid != 0 && (mip = FindCompiledTextureMap(pack1.HighResUid)) != null) {
+        if(pack1.HighResUid != 0 && (mip = FindCompiledTextureMap(assets, pack1.HighResUid)) != null) {
             return mip;
         }
 
-        if(pack1.MediumResUid != 0 && (mip = FindCompiledTextureMap(pack1.MediumResUid)) != null) {
+        if(pack1.MediumResUid != 0 && (mip = FindCompiledTextureMap(assets, pack1.MediumResUid)) != null) {
             return mip;
         }
 
-        if(pack1.LowResUid != 0 && (mip = FindCompiledTextureMap(pack1.LowResUid)) != null) {
+        if(pack1.LowResUid != 0 && (mip = FindCompiledTextureMap(assets, pack1.LowResUid)) != null) {
             return mip;
         }
 
         return mip;
     }
 
-    public static void ExportMaterialInfo(AssetContainer container, Material material, string path) {
-        if (material.DiffuseMap != null && material.DiffuseMap.TextureBaseUid != 0) ExportTextureSelector(container, material.DiffuseMap, Path.Join(path, $"diffuse.dds"));
-        if (material.SpecularMap != null && material.SpecularMap.TextureBaseUid != 0) ExportTextureSelector(container, material.SpecularMap, Path.Join(path, $"specular.dds"));
-        if (material.NormalMap != null && material.NormalMap.TextureBaseUid != 0) ExportTextureSelector(container, material.NormalMap, Path.Join(path, $"normal.dds"));
-        if(material.ColorMask != null && material.ColorMask.TextureBaseUid != 0) ExportTextureSelector(container, material.ColorMask, Path.Join(path, $"colormask.dds"));
+    public static void ExportMaterialInfo(AssetDirectory assets, Material material, string path) {
+        if (material.DiffuseMap != null && material.DiffuseMap.TextureBaseUid != 0) ExportTextureSelector(assets, material.DiffuseMap, Path.Join(path, $"diffuse.dds"));
+        if (material.SpecularMap != null && material.SpecularMap.TextureBaseUid != 0) ExportTextureSelector(assets, material.SpecularMap, Path.Join(path, $"specular.dds"));
+        if (material.NormalMap != null && material.NormalMap.TextureBaseUid != 0) ExportTextureSelector(assets, material.NormalMap, Path.Join(path, $"normal.dds"));
+        if(material.ColorMask != null && material.ColorMask.TextureBaseUid != 0) ExportTextureSelector(assets, material.ColorMask, Path.Join(path, $"colormask.dds"));
         if (material.DetailMap != null && material.DetailMap.TextureBaseUid != 0) {
-            ExportDetailMap(container, material.DetailMap, Path.Join(path, $"detail_1.dds"));
+            ExportDetailMap(assets, material.DetailMap, Path.Join(path, $"detail_1.dds"));
         }
 
         if (material.DetailMap2 != null && material.DetailMap2.TextureBaseUid != 0) {
-            ExportDetailMap(container, material.DetailMap2, Path.Join(path, $"detail_2.dds"));
+            ExportDetailMap(assets, material.DetailMap2, Path.Join(path, $"detail_2.dds"));
         }
 
         if(material.CharacterSkinShaderParams != null && material.CharacterSkinShaderParams.SkinSurfaceScatteringMapUid != 0) {
-            ExportTextureSpecFromUid(container, material.CharacterSkinShaderParams.SkinSurfaceScatteringMapUid, Path.Join(path, $"skin_surface_scattering.dds"));
+            ExportTextureSpecFromUid(assets, material.CharacterSkinShaderParams.SkinSurfaceScatteringMapUid, Path.Join(path, $"skin_surface_scattering.dds"));
         }
 
         if(material.CharacterShaderParams != null) {
             var characterShaderParams = material.CharacterShaderParams;
             if(characterShaderParams.PatternTexture != null && characterShaderParams.PatternTexture.TextureBaseUid != 0) {
-                ExportTextureSelector(container, characterShaderParams.PatternTexture, Path.Join(path, $"pattern.dds"));
+                ExportTextureSelector(assets, characterShaderParams.PatternTexture, Path.Join(path, $"pattern.dds"));
             }
 
             if (characterShaderParams.CamoTexture != null && characterShaderParams.CamoTexture.TextureBaseUid != 0) {
-                ExportTextureSelector(container, characterShaderParams.CamoTexture, Path.Join(path, $"camo.dds"));
+                ExportTextureSelector(assets, characterShaderParams.CamoTexture, Path.Join(path, $"camo.dds"));
             }
         }
 
         File.WriteAllText(Path.Join(path, $"material_config.json"), JsonSerializer.Serialize(material, Options));
     }
 
-    public static void ExportDetailMap(AssetContainer container, DetailMapDescriptor descriptor, string path) {
-        var textureMapSpec = container.ReadAsset(descriptor.TextureBaseUid).As<TextureMapSpec>()!;
-        ExportTextureSpec(container, textureMapSpec, path);
+    public static void ExportDetailMap(AssetDirectory assets, DetailMapDescriptor descriptor, string path) {
+        var textureMapSpec = assets.Get<TextureMapSpec>(descriptor.TextureBaseUid);
+        ExportTextureSpec(assets, textureMapSpec, path);
     }
 
-    public static void ExportTextureSpec(AssetContainer container, TextureMapSpec spec, string path) {
-        var textureMap = container.ReadAsset(spec.TextureMapUid).As<TextureMap>()!;
-        var compiledTextureMap = GetHighestAvailableMip(textureMap);
+    public static void ExportTextureSpec(AssetDirectory assets, TextureMapSpec spec, string path) {
+        var textureMap = assets.Get<TextureMap>(spec.TextureMapUid);
+        var compiledTextureMap = GetHighestAvailableMip(assets, textureMap);
 
         if(compiledTextureMap == null) {
             throw new Exception($"No compiled texture map found for {spec.TextureMapUid}");
@@ -102,13 +97,13 @@ public class MaterialHelper {
         fileStream.Write(buffer);
     }
 
-    public static void ExportTextureSelector(AssetContainer container, TextureSelector selector, string path) {
-        var textureMapSpec = container.ReadAsset(selector.TextureBaseUid).As<TextureMapSpec>()!;
-        ExportTextureSpec(container, textureMapSpec, path);
+    public static void ExportTextureSelector(AssetDirectory assets, TextureSelector selector, string path) {
+        var textureMapSpec = assets.Get<TextureMapSpec>(selector.TextureBaseUid);
+        ExportTextureSpec(assets, textureMapSpec, path);
     }
 
-    public static void ExportTextureSpecFromUid(AssetContainer container, ulong textureBaseUid, string path) {
-        var textureMapSpec = container.ReadAsset(textureBaseUid).As<TextureMapSpec>()!;
-        ExportTextureSpec(container, textureMapSpec, path);
+    public static void ExportTextureSpecFromUid(AssetDirectory assets, ulong textureBaseUid, string path) {
+        var textureMapSpec = assets.Get<TextureMapSpec>(textureBaseUid);
+        ExportTextureSpec(assets, textureMapSpec, path);
     }
 }

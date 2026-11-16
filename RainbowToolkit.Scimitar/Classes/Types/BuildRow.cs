@@ -5,7 +5,7 @@ using System.Text;
 namespace RainbowToolkit.Scimitar.Classes.Types;
 
 public class BuildRow : BaseObject {
-    public static readonly uint MAGIC = 0x364E0211;
+    public static readonly uint MAGIC = 0xFB0C2479;
     protected override uint Magic => MAGIC;
 
     public ulong TableId;

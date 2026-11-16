@@ -6,7 +6,7 @@ using System.Text;
 namespace RainbowToolkit.Scimitar.Classes.Types.Bones;
 
 public class Bone : BaseObject {
-    public static readonly uint MAGIC = 0xF6ECC8A9;
+    public static readonly uint MAGIC = 0x71EDFDE3;
     protected override uint Magic => MAGIC;
 
     public uint BoneId;

@@ -9,7 +9,7 @@ using System.Text.Json.Serialization;
 namespace RainbowToolkit.Scimitar.Classes.Types;
 
 public class Material : BaseObject {
-    public static readonly uint MAGIC = 0x8D80D049;
+    public static readonly uint MAGIC = 0x505A2021;
     protected override uint Magic => MAGIC;
 
     public ulong ShaderTemplateUid;

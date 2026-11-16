@@ -1,17 +1,16 @@
 using RainbowToolkit.Sandbox.Helpers;
+using RainbowToolkit.Scimitar;
 using RainbowToolkit.Scimitar.Classes.Types;
 
 namespace RainbowToolkit.Sandbox;
 
 internal class Program {
     static void Main(string[] args) {
-        ScimitarManager.Initialize(@"E:\Program Files (x86)\Steam\steamapps\common\Tom Clancy's Rainbow Six Siege");
-        var scimitar_mgr = ScimitarManager.Instance;
+        var assets = AssetDirectory.Open(@"E:\Program Files (x86)\Steam\steamapps\common\Tom Clancy's Rainbow Six Siege");
+        //0000001873267BE3:CHR_SPETSNAZ_Tachanka_UNF_Y3S3_SEASONALCAMO_MasterTP.BuildTable
+        //0000001873267B6A:CHR_SPETSNAZ_Tachanka_HDG_Y3S3_SEASONALCAMO_MasterTP.BuildTable
 
-        var onDemand = scimitar_mgr.GetFileByName("datapc64_ondemand");
-        var container = onDemand.GetAssetContainer(0x1873267BE3);
-        var asset = container.ReadAsset(0x1873267BE3).As<BuildTable>()!;
-
-        BuildTableHelper.ExportCharacterBuildTable(container, asset, @"E:\");
+        BuildTableHelper.ExportCharacterBuildTable(assets, assets.Get<BuildTable>(0x1873267BE3), @"E:\");
+        BuildTableHelper.ExportCharacterBuildTable(assets, assets.Get<BuildTable>(0x1873267B6A), @"E:\");
     }
 }

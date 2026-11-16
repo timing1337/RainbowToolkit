@@ -1,14 +1,12 @@
 using Cast.NET;
-using RainbowToolkit.Scimitar.Assets;
+using RainbowToolkit.Scimitar;
 using RainbowToolkit.Scimitar.Classes.Types;
 using RainbowToolkit.Scimitar.Classes.Types.Compiled;
-using RainbowToolkit.Scimitar.Container;
-using System.Security.Cryptography;
 
 namespace RainbowToolkit.Sandbox.Helpers;
 
 public static class BuildTableHelper {
-    private static Dictionary<ulong, Material> RemapMaterialOverrideBuildTable(AssetContainer container, BuildTable buildTable) {
+    private static Dictionary<ulong, Material> RemapMaterialOverrideBuildTable(AssetDirectory assets, BuildTable buildTable) {
         var materialOverrides = new Dictionary<ulong, Material>();
         foreach (var column in buildTable.Rows) {
             foreach (var dynamicProp in column.DynamicProperties) {
@@ -20,13 +18,13 @@ public static class BuildTableHelper {
                     continue;
                 }
 
-                materialOverrides[def.MaterialToReplace] = container.ReadAsset(def.NewMaterial).As<Material>()!;
+                materialOverrides[def.MaterialToReplace] = assets.Get<Material>(def.NewMaterial);
             }
         }
         return materialOverrides;
     }
     private static void ExportMeshAndSkeleton(
-        AssetContainer container, BuildTable buildTable,
+        AssetDirectory assets, BuildTable buildTable,
         string path, Dictionary<ulong, Material> materialOverrides) {
         var row = buildTable.Rows.FirstOrDefault();
         if (row == null) {
@@ -36,21 +34,14 @@ public static class BuildTableHelper {
         List<Skeleton> skel = new();
         List<Mesh> meshes = new();
         foreach (var dynamicProp in row.DynamicProperties) {
-            Asset? asset = null;
-
             if (dynamicProp.ValueUid == 0) {
                 continue;
             }
 
-            if (container.ContainsAsset(dynamicProp.ValueUid)) {
-                asset = container.ReadAsset(dynamicProp.ValueUid);
-            } else if (ScimitarManager.Instance.FindAssetContainer(dynamicProp.ValueUid) is AssetContainer foundContainer) {
-                asset = foundContainer.ReadAsset(dynamicProp.ValueUid);
-            }
+            var asset = assets.Find(dynamicProp.ValueUid)
+                ?? throw new Exception($"Could not find asset with UID {dynamicProp.ValueUid:X} in any container.");
 
-            if (asset == null) {
-                throw new Exception($"Could not find asset with UID {dynamicProp.ValueUid} in any container.");
-            }
+            Console.WriteLine($"{dynamicProp.ValueUid:X} {asset.ClassId:X}");
 
             var assetObj = asset.Data;
             if (assetObj is Skeleton skeleton) {
@@ -67,28 +58,16 @@ public static class BuildTableHelper {
 
         foreach (var meshobj in meshes) {
             // Export mesh first
-            var compiledMeshObjAsset = ScimitarManager.Instance.FindAssetContainer(meshobj.CompiledMeshObjectUid)?.ReadAsset(meshobj.CompiledMeshObjectUid);
-            if (compiledMeshObjAsset == null) {
-                throw new Exception($"Could not find compiled mesh object with UID {meshobj.CompiledMeshObjectUid} in any container.");
-            }
-
-            var compiledMeshObj = compiledMeshObjAsset.As<CompiledMeshObject>()!;
+            var compiledMeshObj = assets.Get<CompiledMeshObject>(meshobj.CompiledMeshObjectUid);
             var modelNode = MeshHelper.ExportLod(meshobj, compiledMeshObj, 0, materialOverrides);
             MeshHelper.PopulateSkeleton(modelNode, meshobj, skel);
 
             foreach (var materialUid in meshobj.MaterialUids) {
-                var material = materialOverrides.GetValueOrDefault(materialUid);
-                if (material == null) {
-                    material = container.ReadAsset(materialUid).As<Material>();
-                }
-
-                if(material == null) {
-                    throw new Exception($"Could not find material with UID {materialUid} in any container.");
-                }
+                var material = materialOverrides.GetValueOrDefault(materialUid) ?? assets.Get<Material>(materialUid);
 
                 var materialPath = Path.Combine(materialsPath, $"material_{material.Uid:X}");
                 Directory.CreateDirectory(materialPath);
-                MaterialHelper.ExportMaterialInfo(container, material, materialPath);
+                MaterialHelper.ExportMaterialInfo(assets, material, materialPath);
             }
             
             var root = new CastNode(CastNodeIdentifier.Root);
@@ -98,7 +77,7 @@ public static class BuildTableHelper {
         }
     }
 
-    public static void ExportCharacterBuildTable(AssetContainer container, BuildTable buildTable, string path) {
+    public static void ExportCharacterBuildTable(AssetDirectory assets, BuildTable buildTable, string path) {
         path = Path.Join(path, $"buildtable_{buildTable.Uid:X}");
         if (!Directory.Exists(path)) {
             Directory.CreateDirectory(path);
@@ -119,10 +98,10 @@ public static class BuildTableHelper {
             throw new Exception("Character build table is missing material override table property.");
         }
 
-        var materialOverrideBuildTable = container.ReadAsset(materialOverrideTable.ValueUid).As<BuildTable>()!;
-        var meshBuildTable = container.ReadAsset(meshTable.ValueUid).As<BuildTable>()!;
+        var materialOverrideBuildTable = assets.Get<BuildTable>(materialOverrideTable.ValueUid);
+        var meshBuildTable = assets.Get<BuildTable>(meshTable.ValueUid);
 
-        var materialOverrides = RemapMaterialOverrideBuildTable(container, materialOverrideBuildTable);
-        ExportMeshAndSkeleton(container, meshBuildTable, path, materialOverrides);
+        var materialOverrides = RemapMaterialOverrideBuildTable(assets, materialOverrideBuildTable);
+        ExportMeshAndSkeleton(assets, meshBuildTable, path, materialOverrides);
     }
 }

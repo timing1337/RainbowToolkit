@@ -4,7 +4,7 @@ using System.Text;
 
 namespace RainbowToolkit.Scimitar.Classes.Types.Bones.Modifiers;
 public class ConstraintTarget  : BaseObject {
-    public static readonly uint MAGIC = 0x00C1EA54;
+    public static readonly uint MAGIC = 0x7A4FB928;
     protected override uint Magic => MAGIC;
     public override void Parse(FastLoadReader reader) {
         var unk0 = reader.ReadNullable();

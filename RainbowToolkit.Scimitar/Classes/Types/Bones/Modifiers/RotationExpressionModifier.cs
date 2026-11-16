@@ -5,7 +5,7 @@ using System.Text;
 namespace RainbowToolkit.Scimitar.Classes.Types.Bones.Modifiers;
 
 public class RotationExpressionModifier : BoneModifier {
-    public new static readonly uint MAGIC = 0x41E35FF3;
+    public new static readonly uint MAGIC = 0xF4D078B3;
     protected override uint Magic => MAGIC;
     public override void Parse(FastLoadReader reader) {
         base.Parse(reader);

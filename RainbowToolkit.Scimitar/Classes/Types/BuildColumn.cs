@@ -6,7 +6,7 @@ using System.Text;
 namespace RainbowToolkit.Scimitar.Classes.Types;
 
 public class BuildColumn : BaseObject {
-    public static readonly uint MAGIC = 0xE281A006;
+    public static readonly uint MAGIC = 0x5E6C9B0B;
     protected override uint Magic => MAGIC;
 
     public uint PassField;

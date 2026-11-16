@@ -36,7 +36,7 @@ public class AssetContainer {
             var uid = header.ReadUInt64();
             var size = header.ReadInt32();
             if (size >= 0x40000000) {
-                var additionalHeader = header.ReadBytes(16);
+                header.BaseStream.Seek(16, SeekOrigin.Current);
                 size &= 0x3FFFFFFF;
             }
             entries.Add(uid, (size, offset));

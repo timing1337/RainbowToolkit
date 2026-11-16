@@ -4,7 +4,7 @@ using System.Numerics;
 namespace RainbowToolkit.Scimitar.Classes.Types;
 
 public class MeshBone : BaseObject {
-    public static readonly uint MAGIC = 0x3761F6E4;
+    public static readonly uint MAGIC = 0xF8321ADC;
     protected override uint Magic => MAGIC;
 
     public uint BoneId;

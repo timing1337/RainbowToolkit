@@ -1,7 +1,7 @@
 namespace RainbowToolkit.Scimitar.Classes.Types;
 
 public class TextureMapSpec : BaseObject {
-    public static readonly uint MAGIC = 0x4F09331E;
+    public static readonly uint MAGIC = 0x87CE3D94;
     protected override uint Magic => MAGIC;
 
     public ulong TextureMapUid;

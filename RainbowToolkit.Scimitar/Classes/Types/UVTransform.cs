@@ -1,7 +1,7 @@
 namespace RainbowToolkit.Scimitar.Classes.Types;
 
 public class UvTransform : BaseObject {
-    public static readonly uint MAGIC = 0xFB0099E5;
+    public static readonly uint MAGIC = 0x9848465B;
     protected override uint Magic => MAGIC;
 
     public override void Parse(FastLoadReader reader) {

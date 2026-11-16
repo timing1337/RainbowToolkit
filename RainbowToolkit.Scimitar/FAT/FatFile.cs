@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace RainbowToolkit.Scimitar.FAT;
@@ -32,6 +33,15 @@ public class FatFile {
                 chunk.Offset = (chunk.Offset ^ 0x7CC2583535777B15) - 0x507EE14611C4AC31;
                 chunk.Uid = (chunk.Uid - 0x33432D300A4C8048) ^ 0xD615D7B0ABF4B6A4;
                 chunk.Size = (chunk.Size ^ 0x6D4053A0) - 0x3C48E3F9;
+                break;
+            case 7:
+                chunk.Uid = (BitOperations.RotateRight(chunk.Uid, (int)(chunk.Offset % 62) + 1) ^ 0x06A4C052D7041390) + 0x4C162B4A2E4FC815;
+                chunk.Size = (chunk.Size - 0x58DAF294) ^ 0x5B903846;
+                break;
+            case 8:
+                chunk.Offset = (chunk.Offset - 0x11374EEF1758776) ^ 0x6693ACB2C80AEE30;
+                chunk.Uid = (BitOperations.RotateRight(chunk.Uid, (int)(chunk.Offset % 62) + 1) ^ 0xB2F0A37FF305FADC) + 0x71BDC79BF66468F6;
+                chunk.Size = (chunk.Size + 0x44F750CB) ^ 0xEEC7968E;
                 break;
         }
 
