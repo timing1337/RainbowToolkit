@@ -2,6 +2,7 @@ using RainbowToolkit.Scimitar;
 using RainbowToolkit.Scimitar.Classes.Types;
 using RainbowToolkit.Scimitar.Classes.Types.Compiled;
 using System.Numerics;
+using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -73,7 +74,27 @@ public class MaterialHelper {
             }
         }
 
+        if (material.CustomParams.Count > 0) {
+            var names = GetShaderParamNames(assets, material.ShaderTemplateUid);
+            var named = names.Count == material.CustomParams.Count;
+            material.ShaderParams = new();
+            for (var i = 0; i < material.CustomParams.Count; i++) {
+                var name = named ? names[i] : $"Param{i}";
+                var value = material.CustomParams[i];
+                if (value is ulong textureUid && textureUid != 0) {
+                    ExportTextureSpecFromUid(assets, textureUid, Path.Join(path, $"{name}.dds"));
+                }
+                material.ShaderParams[name] = value;
+            }
+        }
+
         File.WriteAllText(Path.Join(path, $"material_config.json"), JsonSerializer.Serialize(material, Options));
+    }
+
+    // Shader templates embed "#define <Name> UM_CustomParam..." in the same order as Material.CustomParams.
+    private static List<string> GetShaderParamNames(AssetDirectory assets, ulong templateUid) {
+        var source = assets.Find(templateUid)?.As<ShaderTemplate>()?.Code?.Source ?? "";
+        return Regex.Matches(source, @"#define (\w+) \w*CustomParam").Select(m => m.Groups[1].Value).ToList();
     }
 
     public static void ExportDetailMap(AssetDirectory assets, DetailMapDescriptor descriptor, string path) {

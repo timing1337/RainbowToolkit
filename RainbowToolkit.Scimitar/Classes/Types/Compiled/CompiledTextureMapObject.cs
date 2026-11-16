@@ -24,9 +24,9 @@ public class CompiledHighResolutionTextureMap : CompiledTextureMapObject {
 }
 
 public class CompiledMediumResolutionTextureMap : CompiledTextureMapObject {
-    public new static readonly uint MAGIC = 0x3f5e4d13;
+    public new static readonly uint MAGIC = 0xF9C80707;
 }
 
 public class CompiledLowResolutionTextureMap : CompiledTextureMapObject {
-    public new static readonly uint MAGIC = 0x1f5e4d13;
+    public new static readonly uint MAGIC = 0xD7B5C478;
 }

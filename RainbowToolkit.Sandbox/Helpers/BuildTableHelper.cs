@@ -24,13 +24,14 @@ public static class BuildTableHelper {
         return materialOverrides;
     }
 
-    private static void ExportChildBuildTable(AssetDirectory assets, BuildTable buildTable, string path) {
+    private static void ExportChildBuildTable(AssetDirectory assets, BuildTable buildTable, string path,
+        List<Skeleton> parentSkeletons, List<Mesh> parentMeshes) {
         var row = buildTable.Rows.FirstOrDefault();
         if (row == null) {
             return;
         }
 
-        List<Skeleton> skel = new();
+        List<Skeleton> skel = new(parentSkeletons);
         List<Mesh> meshes = new();
 
         foreach (var dynamicProp in row.DynamicProperties) {
@@ -60,8 +61,8 @@ public static class BuildTableHelper {
         foreach (var meshobj in meshes) {
             // Export mesh first
             var compiledMeshObj = assets.Get<CompiledMeshObject>(meshobj.CompiledMeshObjectUid);
-            var modelNode = MeshHelper.ExportLod(meshobj, compiledMeshObj, 0, new());
-            MeshHelper.PopulateSkeleton(modelNode, meshobj, skel);
+            var modelNode = MeshHelper.ExportLod(meshobj, compiledMeshObj, 0, null);
+            MeshHelper.PopulateSkeleton(modelNode, meshobj, skel, parentMeshes.Concat(meshes));
 
             foreach (var materialUid in meshobj.MaterialUids) {
                 var material = assets.Get<Material>(materialUid);
@@ -86,6 +87,7 @@ public static class BuildTableHelper {
 
         List<Skeleton> skel = new();
         List<Mesh> meshes = new();
+        List<BuildTable> children = new();
         foreach (var dynamicProp in row.DynamicProperties) {
             if (dynamicProp.ValueUid == 0) {
                 continue;
@@ -100,8 +102,12 @@ public static class BuildTableHelper {
             } else if (assetObj is Mesh mesh) {
                 meshes.Add(mesh);
             }else if(assetObj is BuildTable childBuildTable) {
-                ExportChildBuildTable(assets, childBuildTable, path);
+                children.Add(childBuildTable);
             }
+        }
+
+        foreach (var child in children) {
+            ExportChildBuildTable(assets, child, path, skel, meshes);
         }
 
         var materialsPath = Path.Combine(path, "materials");
@@ -113,7 +119,7 @@ public static class BuildTableHelper {
             // Export mesh first
             var compiledMeshObj = assets.Get<CompiledMeshObject>(meshobj.CompiledMeshObjectUid);
             var modelNode = MeshHelper.ExportLod(meshobj, compiledMeshObj, 0, materialOverrides);
-            MeshHelper.PopulateSkeleton(modelNode, meshobj, skel);
+            MeshHelper.PopulateSkeleton(modelNode, meshobj, skel, meshes);
 
             foreach (var materialUid in meshobj.MaterialUids) {
                 var material = materialOverrides.GetValueOrDefault(materialUid) ?? assets.Get<Material>(materialUid);

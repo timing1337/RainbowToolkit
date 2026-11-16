@@ -25,72 +25,54 @@ public static class MeshHelper {
             modelNode.AddNode(meshNode);
         }
 
-        if(materialOverrides != null) {
-            RemapMaterial(modelNode, mesh, lodInfo, materialOverrides);
-        }
-
+        AddMaterials(modelNode, mesh, lodInfo, materialOverrides);
         return modelNode;
     }
 
-    public static void PopulateSkeleton(ModelNode node, Mesh mesh, List<Skeleton> skeletons) {
+    public static void PopulateSkeleton(ModelNode node, Mesh mesh, List<Skeleton> skeletons, IEnumerable<Mesh>? otherMeshes = null) {
         var allBones = skeletons.SelectMany(s => s.Bones).ToList();
+
+        var binds = new Dictionary<uint, Matrix4x4>();
+        foreach (var mb in (otherMeshes ?? []).SelectMany(m => m.MeshBones)) binds[mb.BoneId] = mb.Transform;
+        foreach (var mb in mesh.MeshBones) binds[mb.BoneId] = mb.Transform;
+
+        var order = mesh.MeshBones.Select(b => b.BoneId).ToList();
+        var parentOf = new Dictionary<uint, uint?>();
+        for (int i = 0; i < order.Count; i++) {
+            var id = order[i];
+            var parent = allBones.Where(b => b.BoneId == id).Select(b => b.ParentBone).FirstOrDefault(p => p != null);
+            while (parent != null && !binds.ContainsKey(parent.BoneId)) {
+                parent = parent.ParentBone;
+            }
+            parentOf[id] = parent?.BoneId;
+            if (parent != null && !order.Contains(parent.BoneId)) {
+                order.Add(parent.BoneId);
+            }
+        }
+
         var skeletonNode = node.AddNode<SkeletonNode>();
+        foreach (var id in order) {
+            Matrix4x4.Invert(binds[id], out var global);
+            var parentId = parentOf[id];
+            var local = parentId is uint p ? global * binds[p] : global;
+            Matrix4x4.Decompose(local, out var s, out var r, out var t);
 
-        for (int i = 0; i < mesh.MeshBones.Length; i++) {
-            var meshBone = mesh.MeshBones[i];
-            var bone = allBones.FirstOrDefault(b => b.BoneId == meshBone.BoneId);
             var boneNode = skeletonNode.AddNode<BoneNode>();
-            boneNode.Name = BoneNames.Get(meshBone.BoneId);
-            Matrix4x4 childGlobal;
-            Matrix4x4.Invert(meshBone.Transform, out childGlobal);
-
-            // HACK
-            // Okay for some reasons not ALL bones in skeleton are in mesh bone
-            // This fucks up hierachy. What we do is going up until we find a bone that is in mesh bone
-            // if it doesn't exist then we just make it a root bone
-
-            // This also happens to bone that is in meshBone but not in skeleton
-            // just gonna assume that its a root bone.
-            // and pray cast import merge can deal with them :D
-
-            MeshBone? parentMeshBone = null;
-            if (bone != null && bone.ParentBone != null) {
-                var currentParentBone = bone.ParentBone;
-
-                while (currentParentBone != null &&
-                       !mesh.MeshBones.Any(b => b.BoneId == currentParentBone.BoneId)) {
-                    currentParentBone = currentParentBone.ParentBone;
-                }
-
-                if (currentParentBone != null) {
-                    parentMeshBone = mesh.MeshBones.First(b => b.BoneId == currentParentBone.BoneId);
-                }
-            }
-
-            if (parentMeshBone != null) {
-                var local = childGlobal * parentMeshBone.Transform;
-                Matrix4x4.Decompose(local, out var s, out var r, out var t);
-                boneNode.Scale = s;
-                boneNode.LocalRotation = r;
-                boneNode.LocalPosition = t;
-                boneNode.ParentIndex = mesh.MeshBones.IndexOf(parentMeshBone);
-            } else {
-                Matrix4x4.Decompose(childGlobal, out var s, out var r, out var t);
-                boneNode.Scale = s;
-                boneNode.LocalRotation = r;
-                boneNode.LocalPosition = t;
-                boneNode.ParentIndex = -1;
-            }
+            boneNode.Name = BoneNames.Get(id);
+            boneNode.Scale = s;
+            boneNode.LocalRotation = r;
+            boneNode.LocalPosition = t;
+            boneNode.ParentIndex = parentId is uint pi ? order.IndexOf(pi) : -1;
         }
     }
 
-    public static void RemapMaterial(ModelNode node, Mesh mesh, MeshLod lod, Dictionary<ulong, Material> materialOverrides) {
+    public static void AddMaterials(ModelNode node, Mesh mesh, MeshLod lod, Dictionary<ulong, Material>? materialOverrides) {
         for (int i = 0; i < lod.Primitives.Length; i++) {
             var primitive = lod.Primitives[i];
             var meshNode = node.Meshes[i];
             var material = mesh.MaterialUids[i];
 
-            if (materialOverrides.ContainsKey(material)) {
+            if (materialOverrides != null && materialOverrides.ContainsKey(material)) {
                 material = materialOverrides[material].Uid;
             }
 

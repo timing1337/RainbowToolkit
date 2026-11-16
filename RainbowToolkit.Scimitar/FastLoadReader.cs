@@ -24,6 +24,17 @@ public sealed class FastLoadReader : BinaryReader {
         return Parse(classId, uid);
     }
 
+    public override string ReadString() {
+        var length = ReadInt32();
+        return length == 0 ? "" : System.Text.Encoding.UTF8.GetString(ReadBytes(length + 1), 0, length);
+    }
+
+    public ulong ReadBits(ulong bits, int offset, int width = 1, bool dword = false) {
+        ulong value = dword ? ReadUInt32() : ReadByte();
+        var mask = (1UL << width) - 1;
+        return bits & ~(mask << offset) | (value & mask) << offset;
+    }
+
     public object ReadNullable() {
         var flag = ReadByte();
         if (flag == 3) {
